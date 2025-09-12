@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gauditor Test Coverage</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root { --bg:#0b1020; --panel:#121732; --text:#e8ecfb; --muted:#9aa3c7; --accent:#6dd3fb; --ok:#22c55e; --warn:#f59e0b; --bad:#ef4444; }
+    *{ box-sizing:border-box }
+    body{ margin:0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background:var(--bg); color:var(--text) }
+    header{ padding:28px 24px; border-bottom:1px solid rgba(255,255,255,.08); background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0)); }
+    .wrap{ max-width:1200px; margin:0 auto; padding:24px }
+    h1{ margin:0; font-size:24px }
+    .grid{ display:grid; grid-template-columns: 1fr 1fr; gap:20px; }
+    .card{ background:var(--panel); border:1px solid rgba(255,255,255,.06); border-radius:14px; padding:18px }
+    .kpis{ display:flex; gap:16px; flex-wrap:wrap; margin:16px 0 }
+    .kpi{ flex:1 1 160px; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); border-radius:12px; padding:14px }
+    .kpi h3{ margin:0 0 6px; font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em }
+    .kpi .val{ font-weight:700; font-size:22px }
+    .pill{ display:inline-block; padding:4px 8px; border-radius:999px; font-size:12px; margin-left:8px }
+    .ok{ background:rgba(34,197,94,.12); color:#22c55e; border:1px solid rgba(34,197,94,.3) }
+    .warn{ background:rgba(245,158,11,.12); color:#f59e0b; border:1px solid rgba(245,158,11,.3) }
+    .bad{ background:rgba(239,68,68,.12); color:#ef4444; border:1px solid rgba(239,68,68,.3) }
+    table{ width:100%; border-collapse:collapse; font-size:14px }
+    th, td{ padding:10px 8px; border-bottom:1px solid rgba(255,255,255,.06) }
+    th{ text-align:left; color:var(--muted); font-weight:600; text-transform:uppercase; font-size:12px }
+    .muted{ color:var(--muted) }
+    footer{ opacity:.7; font-size:12px; padding:16px 24px; border-top:1px solid rgba(255,255,255,.08) }
+    a{ color:var(--accent); text-decoration:none }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>Gauditor • Test Coverage Dashboard <span id="status-pill" class="pill">loading…</span></h1>
+      <div class="muted" id="meta"></div>
+    </div>
+  </header>
+  <div class="wrap">
+    <div class="kpis">
+      <div class="kpi"><h3>Total Coverage</h3><div class="val" id="kpi-total">–</div></div>
+      <div class="kpi"><h3>Packages</h3><div class="val" id="kpi-packages">–</div></div>
+      <div class="kpi"><h3>Functions</h3><div class="val" id="kpi-functions">–</div></div>
+      <div class="kpi"><h3>Uncovered Functions</h3><div class="val" id="kpi-uncovered">–</div></div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <canvas id="chartTotal"></canvas>
+      </div>
+      <div class="card">
+        <canvas id="chartPackages"></canvas>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:20px">
+      <h3 style="margin:0 0 12px">Least Covered Functions</h3>
+      <table id="tableFuncs"><thead><tr><th>Function</th><th>Package/File</th><th>Coverage</th></tr></thead><tbody></tbody></table>
+    </div>
+  </div>
+  <footer>
+    <div class="wrap">Generated from <code>go tool cover -func</code> • Refresh this page after running <code>make coverage</code>.</div>
+  </footer>
+
+  <script>
+    // Raw output of: go tool cover -func=coverage.out
+    const coverFunc = `"github.com/antoniomarcosferreira/gauditor/cmd/gauditor/main.go:14:\t\tmain\t\t\t0.0%\ngithub.com/antoniomarcosferreira/gauditor/examples/basic/main.go:11:\t\tmain\t\t\t0.0%\ngithub.com/antoniomarcosferreira/gauditor/examples/httpclient/main.go:11:\tmain\t\t\t0.0%\ngithub.com/antoniomarcosferreira/gauditor/pkg/gauditor/recorder.go:20:\t\tWithClock\t\t0.0%\ngithub.com/antoniomarcosferreira/gauditor/pkg/gauditor/recorder.go:23:\t\tNewRecorder\t\t0.0%\ngithub.com/antoniomarcosferreira/gauditor/pkg/gauditor/recorder.go:32:\t\tRecord\t\t\t0.0%\ngithub.com/antoniomarcosferreira/gauditor/pkg/gauditor/recorder.go:47:\t\tQuery\t\t\t0.0%\ngithub.com/antoniomarcosferreira/gauditor/pkg/gauditor/simple.go:19:\t\tNewEasyRecorder\t\t0.0%\ngithub.com/antoniomarcosferreira/gauditor/pkg/gauditor/simple.go:24:\t\tRecord\t\t\t0.0%\ngithub.com/antoniomarcosferreira/gauditor/pkg/gauditor/storage.go:22:\t\tNewMemoryStorage\t0.0%\ngithub.com/antoniomarcosferreira/gauditor/pkg/gauditor/storage.go:27:\t\tSave\t\t\t0.0%\ngithub.com/antoniomarcosferreira/gauditor/pkg/gauditor/storage.go:36:\t\tQuery\t\t\t0.0%\ntotal:\t\t\t\t\t\t\t\t\t\t(statements)\t\t0.0%"`;
+
+    function parseCover(coverText){
+      const lines = coverText.trim().split(/\n+/);
+      const fnRows = [];
+      let total = 0;
+      for(const line of lines){
+        const parts = line.trim().split(/\s+/);
+        const pctStr = parts[parts.length-1] || "0%";
+        const pct = parseFloat(pctStr.replace('%','')) || 0;
+        if(line.startsWith('total:')){ total = pct; continue; }
+        // format: path/file.go:func  X.Y%
+        const left = parts.slice(0, parts.length-1).join(' ');
+        const [path, func] = left.split(':');
+        fnRows.push({ path, func, pct });
+      }
+      // group by package (directory of path)
+      const byPkg = new Map();
+      for(const row of fnRows){
+        const pkg = row.path.substring(0, row.path.lastIndexOf('/')) || row.path;
+        if(!byPkg.has(pkg)) byPkg.set(pkg, []);
+        byPkg.get(pkg).push(row);
+      }
+      const packages = Array.from(byPkg.entries()).map(([name, rows])=>{
+        const avg = rows.reduce((s,r)=>s+r.pct,0)/rows.length;
+        return { name, coverage: +(avg.toFixed(2)), functions: rows };
+      }).sort((a,b)=>a.coverage-b.coverage);
+
+      const uncovered = fnRows.filter(r=>r.pct < 100).sort((a,b)=>a.pct-b.pct).slice(0,20);
+      return { total, packages, functions: fnRows, uncovered };
+    }
+
+    function pctStr(n){ return `${n.toFixed(2)}%`; }
+    function statusClass(p){ return p>=90? 'ok': p>=75? 'warn':'bad'; }
+
+    function render(data){
+      // KPIs
+      document.getElementById('kpi-total').textContent = pctStr(data.total);
+      document.getElementById('kpi-packages').textContent = data.packages.length;
+      document.getElementById('kpi-functions').textContent = data.functions.length;
+      document.getElementById('kpi-uncovered').textContent = data.uncovered.length;
+      const pill = document.getElementById('status-pill');
+      pill.classList.add(statusClass(data.total));
+      pill.textContent = data.total>=100? 'perfect 100%': data.total>=90? 'great': data.total>=75? 'good':'needs work';
+
+      // Meta
+      document.getElementById('meta').textContent = new Date().toLocaleString();
+
+      // Total chart
+      new Chart(document.getElementById('chartTotal'),{
+        type:'doughnut',
+        data:{
+          labels:['Covered','Uncovered'],
+          datasets:[{ data:[data.total, 100-data.total], backgroundColor:['#22c55e','#ef4444'] }]
+        },
+        options:{ plugins:{ legend:{ labels:{ color:'#cbd5e1' } } } }
+      });
+
+      // Packages chart
+      const pkgs = data.packages.slice().sort((a,b)=>a.coverage-b.coverage);
+      new Chart(document.getElementById('chartPackages'),{
+        type:'bar',
+        data:{
+          labels: pkgs.map(p=>p.name.replace(/^.*\/pkg\//,'')),
+          datasets:[{ label:'Coverage %', data: pkgs.map(p=>p.coverage), backgroundColor:'#6dd3fb' }]
+        },
+        options:{ indexAxis:'y', scales:{ x:{ ticks:{ color:'#cbd5e1' } }, y:{ ticks:{ color:'#cbd5e1' } } }, plugins:{ legend:{ labels:{ color:'#cbd5e1' } } } }
+      });
+
+      // Table of least covered functions
+      const tbody = document.querySelector('#tableFuncs tbody');
+      tbody.innerHTML = '';
+      for(const r of data.uncovered){
+        const tr = document.createElement('tr');
+        const tdFn = document.createElement('td'); tdFn.textContent = r.func; tr.appendChild(tdFn);
+        const tdPath = document.createElement('td'); tdPath.textContent = r.path; tr.appendChild(tdPath);
+        const tdPct = document.createElement('td'); tdPct.textContent = pctStr(r.pct); tr.appendChild(tdPct);
+        tbody.appendChild(tr);
+      }
+    }
+
+    render(parseCover(coverFunc));
+  </script>
+</body>
+</html>

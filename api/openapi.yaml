@@ -1,0 +1,88 @@
+openapi: 3.0.3
+info:
+  title: Gauditor API
+  version: 0.1.0
+  description: Minimal ingest and query endpoints for audit events
+servers:
+  - url: http://localhost:8080
+paths:
+  /v1/events:
+    post:
+      summary: Ingest an audit event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Event'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '400':
+          description: Invalid event
+    get:
+      summary: Query audit events
+      parameters:
+        - in: query
+          name: tenant
+          schema:
+            type: string
+        - in: query
+          name: actorId
+          schema:
+            type: string
+        - in: query
+          name: action
+          schema:
+            type: string
+        - in: query
+          name: targetId
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of events
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+components:
+  schemas:
+    Actor:
+      type: object
+      properties:
+        id: { type: string }
+        ip: { type: string }
+        userAgent: { type: string }
+        attributes:
+          type: object
+          additionalProperties: true
+    Target:
+      type: object
+      properties:
+        id: { type: string }
+        type: { type: string }
+        name: { type: string }
+    Event:
+      type: object
+      required: [id, timestamp, tenant, actor, action]
+      properties:
+        id: { type: string }
+        timestamp: { type: string, format: date-time }
+        tenant: { type: string }
+        actor:
+          $ref: '#/components/schemas/Actor'
+        action: { type: string }
+        target:
+          $ref: '#/components/schemas/Target'
+        data:
+          type: object
+          additionalProperties: true
+
+

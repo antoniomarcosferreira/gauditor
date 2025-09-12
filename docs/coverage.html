@@ -67,8 +67,21 @@
   </footer>
 
   <script>
-    // Raw output of: go tool cover -func=coverage.out
-    const coverFunc = `"github.com/antoniomarcosferreira/gauditor/cmd/gauditor/main.go:14:\t\tmain\t\t\t0.0%\ngithub.com/antoniomarcosferreira/gauditor/examples/basic/main.go:11:\t\tmain\t\t\t0.0%\ngithub.com/antoniomarcosferreira/gauditor/examples/httpclient/main.go:11:\tmain\t\t\t0.0%\ngithub.com/antoniomarcosferreira/gauditor/pkg/gauditor/recorder.go:20:\t\tWithClock\t\t0.0%\ngithub.com/antoniomarcosferreira/gauditor/pkg/gauditor/recorder.go:23:\t\tNewRecorder\t\t0.0%\ngithub.com/antoniomarcosferreira/gauditor/pkg/gauditor/recorder.go:32:\t\tRecord\t\t\t0.0%\ngithub.com/antoniomarcosferreira/gauditor/pkg/gauditor/recorder.go:47:\t\tQuery\t\t\t0.0%\ngithub.com/antoniomarcosferreira/gauditor/pkg/gauditor/simple.go:19:\t\tNewEasyRecorder\t\t0.0%\ngithub.com/antoniomarcosferreira/gauditor/pkg/gauditor/simple.go:24:\t\tRecord\t\t\t0.0%\ngithub.com/antoniomarcosferreira/gauditor/pkg/gauditor/storage.go:22:\t\tNewMemoryStorage\t0.0%\ngithub.com/antoniomarcosferreira/gauditor/pkg/gauditor/storage.go:27:\t\tSave\t\t\t0.0%\ngithub.com/antoniomarcosferreira/gauditor/pkg/gauditor/storage.go:36:\t\tQuery\t\t\t0.0%\ntotal:\t\t\t\t\t\t\t\t\t\t(statements)\t\t0.0%"`;
+    // Raw output of: go tool cover -func=coverage.out (raw, multi-line)
+    const coverFunc = `github.com/antoniomarcosferreira/gauditor/cmd/gauditor/main.go:15: newServer 100.0%
+github.com/antoniomarcosferreira/gauditor/cmd/gauditor/main.go:58: run 100.0%
+github.com/antoniomarcosferreira/gauditor/cmd/gauditor/main.go:63: realMain 60.0%
+github.com/antoniomarcosferreira/gauditor/cmd/gauditor/main.go:81: main 0.0%
+github.com/antoniomarcosferreira/gauditor/pkg/gauditor/recorder.go:20: WithClock 100.0%
+github.com/antoniomarcosferreira/gauditor/pkg/gauditor/recorder.go:23: NewRecorder 100.0%
+github.com/antoniomarcosferreira/gauditor/pkg/gauditor/recorder.go:32: Record 100.0%
+github.com/antoniomarcosferreira/gauditor/pkg/gauditor/recorder.go:47: Query 100.0%
+github.com/antoniomarcosferreira/gauditor/pkg/gauditor/simple.go:19: NewEasyRecorder 100.0%
+github.com/antoniomarcosferreira/gauditor/pkg/gauditor/simple.go:24: Record 100.0%
+github.com/antoniomarcosferreira/gauditor/pkg/gauditor/storage.go:22: NewMemoryStorage 100.0%
+github.com/antoniomarcosferreira/gauditor/pkg/gauditor/storage.go:27: Save 100.0%
+github.com/antoniomarcosferreira/gauditor/pkg/gauditor/storage.go:36: Query 100.0%
+total: (statements) 91.9%`;
 
     function parseCover(coverText){
       const lines = coverText.trim().split(/\n+/);

@@ -2,6 +2,8 @@
 
 The Go-powered audit trail solution: secure, simple, and scalable.
 
+[Coverage Dashboard](docs/coverage.html) — updated via `make coverage`.
+
 ---
 
 ### Overview
@@ -167,6 +169,7 @@ docker build -t gauditor:dev .
 - Tidy modules: `make tidy`
 - Build all: `make build`
 - Test all: `make test`
+- Coverage: `make coverage` → opens dashboard at `docs/coverage.html`
 
 PRs should include tests where applicable. See `CONTRIBUTING.md`.
 

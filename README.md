@@ -2,6 +2,11 @@
 
 The Go-powered audit trail solution: secure, simple, and scalable.
 
+[![CI](https://github.com/antoniomarcosferreira/gauditor/actions/workflows/ci.yml/badge.svg)](https://github.com/antoniomarcosferreira/gauditor/actions/workflows/ci.yml)
+[![Go Reference](https://pkg.go.dev/badge/github.com/antoniomarcosferreira/gauditor/pkg/gauditor.svg)](https://pkg.go.dev/github.com/antoniomarcosferreira/gauditor/pkg/gauditor)
+[![Go Report Card](https://goreportcard.com/badge/github.com/antoniomarcosferreira/gauditor)](https://goreportcard.com/report/github.com/antoniomarcosferreira/gauditor)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](/LICENSE)
+
 [Coverage Dashboard](docs/coverage.html) — updated via `make coverage`.
 
 ---
@@ -36,13 +41,13 @@ Run the server locally:
 
 ```bash
 go run ./cmd/gauditor
-# server listening on :8080
+# server listening on :8091
 ```
 
 Ingest an event:
 
 ```bash
-curl -s -X POST localhost:8080/v1/events \
+curl -s -X POST localhost:8091/v1/events \
   -H 'content-type: application/json' \
   -d '{
     "tenant":"acme",
@@ -55,7 +60,7 @@ curl -s -X POST localhost:8080/v1/events \
 Query events:
 
 ```bash
-curl -s 'localhost:8080/v1/events?tenant=acme'
+curl -s 'localhost:8091/v1/events?tenant=acme'
 ```
 
 Run the example:
@@ -110,7 +115,10 @@ import (
 )
 
 func recordLogin(ctx context.Context) error {
-  rec := g.NewRecorder(g.NewMemoryStorage())
+  rec := g.NewRecorder(
+    g.NewMemoryStorage(),
+    g.WithIDGenerator(func() string { return "id-1" }), // optional: custom IDs
+  )
   _, err := rec.Record(ctx, g.Event{
     Tenant: "acme",
     Actor:  g.Actor{ID: "u123", Attributes: map[string]any{"type": "user", "email": "alice@example.com", "name": "Alice", "provider": "github"}},
@@ -126,7 +134,7 @@ func recordLogin(ctx context.Context) error {
 ### HTTP API
 
 - `POST /v1/events` — ingest an event (JSON body)
-- `GET  /v1/events` — query events with optional filters: `tenant`, `actorId`, `action`, `targetId`
+- `GET  /v1/events` — query events with optional filters: `tenant`, `actorId`, `action`, `targetId`, `limit`
 
 OpenAPI spec: `api/openapi.yaml`
 
@@ -152,7 +160,7 @@ Build and run with Compose:
 
 ```bash
 docker compose up --build -d
-# server on localhost:8080
+# server on localhost:8091
 ```
 
 Or build the image directly:
@@ -170,6 +178,30 @@ docker build -t gauditor:dev .
 - Build all: `make build`
 - Test all: `make test`
 - Coverage: `make coverage` → opens dashboard at `docs/coverage.html`
+
+#### Makefile commands
+
+```bash
+# install/update modules
+make tidy
+
+# format and lint
+make format
+make lint
+
+# run tests
+make test
+
+# build binaries/libraries
+make build
+
+# generate coverage report and open the dashboard
+make coverage
+open docs/coverage.html
+
+# watch and regenerate coverage (requires fswatch)
+make coverage-watch
+```
 
 PRs should include tests where applicable. See `CONTRIBUTING.md`.
 

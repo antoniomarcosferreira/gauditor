@@ -3,8 +3,9 @@ services:
   gauditor:
     build: .
     ports:
-      - "8080:8080"
+      - "8091:8091"
     environment:
       - GAUDITOR_ENV=dev
+      - GAUDITOR_ADDR=:8091
 
 

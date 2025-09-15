@@ -1,4 +1,4 @@
-name: ci
+name: CI
 
 on:
   push:
@@ -18,8 +18,18 @@ jobs:
         run: go mod tidy
       - name: Build
         run: go build ./...
-      - name: Test
-        run: go test ./...
+      - name: Test (with coverage)
+        run: go test ./... -coverprofile=coverage.out
+      - name: Security scan (govulncheck)
+        uses: golang/govulncheck-action@v1
+        with:
+          go-version-input: '1.23'
+          go-package: ./...
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage.out
       - name: Lint
         uses: golangci/golangci-lint-action@v6
         with:

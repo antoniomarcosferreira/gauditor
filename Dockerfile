@@ -9,7 +9,7 @@ FROM alpine:3.20
 RUN adduser -D -g '' app
 USER app
 COPY --from=build /out/gauditor /usr/local/bin/gauditor
-EXPOSE 8080
-ENTRYPOINT ["gauditor", "-addr", ":8080"]
+EXPOSE 8091
+ENTRYPOINT ["gauditor", "-addr", ":8091"]
 
 

@@ -25,7 +25,7 @@ func main() {
 	}
 
 	body, _ := json.Marshal(payload)
-	resp, err := http.Post("http://localhost:8080/v1/events", "application/json", bytes.NewReader(body))
+	resp, err := http.Post("http://localhost:8091/v1/events", "application/json", bytes.NewReader(body))
 	if err != nil {
 		panic(err)
 	}
@@ -34,7 +34,7 @@ func main() {
 	fmt.Printf("created: %s\n", string(created))
 
 	// Query events via HTTP
-	res, err := http.Get("http://localhost:8080/v1/events?tenant=acme")
+	res, err := http.Get("http://localhost:8091/v1/events?tenant=acme")
 	if err != nil {
 		panic(err)
 	}

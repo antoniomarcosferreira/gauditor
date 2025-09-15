@@ -4,7 +4,7 @@ info:
   version: 0.1.0
   description: Minimal ingest and query endpoints for audit events
 servers:
-  - url: http://localhost:8080
+  - url: http://localhost:8091
 paths:
   /v1/events:
     post:

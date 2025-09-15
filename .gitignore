@@ -17,3 +17,4 @@
 **/bin
 **/.cache
 **/docs/coverage.html
+**/coverage.out

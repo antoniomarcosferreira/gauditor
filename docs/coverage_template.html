@@ -59,7 +59,7 @@
 
     <div class="card" style="margin-top:20px">
       <h3 style="margin:0 0 12px">Least Covered Functions</h3>
-      <table id="tableFuncs"><thead><tr><th>Function</th><th>Package/File</th><th>Coverage</th></tr></thead><tbody></tbody></table>
+      <table id="tableFuncs"><thead><tr><th>Function</th><th>Line</th><th>Package/File</th><th>Coverage</th></tr></thead><tbody></tbody></table>
     </div>
   </div>
   <footer>
@@ -81,8 +81,17 @@
         if(line.startsWith('total:')){ total = pct; continue; }
         // format: path/file.go:func  X.Y%
         const left = parts.slice(0, parts.length-1).join(' ');
-        const [path, func] = left.split(':');
-        fnRows.push({ path, func, pct });
+        const segs = left.split(':');
+        let path = segs[0] || '';
+        let ln = '';
+        let func = '';
+        if (segs.length >= 3) {
+          ln = segs[1];
+          func = segs.slice(2).join(':').trim();
+        } else {
+          func = segs[1] || '';
+        }
+        fnRows.push({ path, func, line: ln, pct });
       }
       // group by package (directory of path)
       const byPkg = new Map();
@@ -143,6 +152,7 @@
       for(const r of data.uncovered){
         const tr = document.createElement('tr');
         const tdFn = document.createElement('td'); tdFn.textContent = r.func; tr.appendChild(tdFn);
+        const tdLn = document.createElement('td'); tdLn.textContent = r.line || '-'; tr.appendChild(tdLn);
         const tdPath = document.createElement('td'); tdPath.textContent = r.path; tr.appendChild(tdPath);
         const tdPct = document.createElement('td'); tdPct.textContent = pctStr(r.pct); tr.appendChild(tdPct);
         tbody.appendChild(tr);

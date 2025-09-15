@@ -25,7 +25,11 @@ func NewMemoryStorage() *MemoryStorage {
 
 // Save appends an event.
 func (m *MemoryStorage) Save(ctx context.Context, event Event) (Event, error) {
-	_ = ctx
+	select {
+	case <-ctx.Done():
+		return event, ctx.Err()
+	default:
+	}
 	m.mu.Lock()
 	m.events = append(m.events, event)
 	m.mu.Unlock()
@@ -34,12 +38,19 @@ func (m *MemoryStorage) Save(ctx context.Context, event Event) (Event, error) {
 
 // Query returns events matching the filter. Results are sorted by timestamp ascending.
 func (m *MemoryStorage) Query(ctx context.Context, q Query) ([]Event, error) {
-	_ = ctx
+	select {
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	default:
+	}
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 
-	results := make([]Event, 0)
+	results := make([]Event, 0, len(m.events))
 	for _, e := range m.events {
+		if ctx.Err() != nil {
+			return nil, ctx.Err()
+		}
 		if q.Tenant != "" && e.Tenant != q.Tenant {
 			continue
 		}

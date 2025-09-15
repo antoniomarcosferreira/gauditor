@@ -3,6 +3,8 @@ package gauditor
 import "time"
 
 // Actor describes who performed the action.
+// ID should be a stable identifier for the actor (for example, a user ID).
+// Optional contextual attributes can be attached via Attributes.
 type Actor struct {
 	ID         string         `json:"id,omitempty"`
 	IP         string         `json:"ip,omitempty"`
@@ -18,6 +20,7 @@ type Target struct {
 }
 
 // Event is the core audit record.
+// ID and Timestamp are populated by the Recorder if unset.
 type Event struct {
 	ID        string         `json:"id"`
 	Timestamp time.Time      `json:"timestamp"`
@@ -29,6 +32,7 @@ type Event struct {
 }
 
 // Query defines filters for retrieving events.
+// Limit applies after filtering; storage may cap the maximum.
 type Query struct {
 	Tenant   string     `json:"tenant,omitempty"`
 	ActorID  string     `json:"actorId,omitempty"`

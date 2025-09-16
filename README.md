@@ -171,28 +171,11 @@ go install github.com/antoniomarcosferreira/gauditor/cmd/gauditor@latest
 
 ---
 
-### Library Usage
+### Documentation
 
-```go
-import (
-  "context"
-  g "github.com/antoniomarcosferreira/gauditor/pkg/gauditor"
-)
-
-func recordLogin(ctx context.Context) error {
-  rec := g.NewRecorder(
-    g.NewMemoryStorage(),
-    g.WithIDGenerator(func() string { return "id-1" }), // optional: custom IDs
-  )
-  _, err := rec.Record(ctx, g.Event{
-    Tenant: "acme",
-    Actor:  g.Actor{ID: "u123", Attributes: map[string]any{"type": "user", "email": "alice@example.com", "name": "Alice", "provider": "github"}},
-    Action: "login",
-    Data:   map[string]any{"method": "password"},
-  })
-  return err
-}
-```
+- Getting started & examples: `docs/Usage.md`
+- Storage backends (Memory, Redis, SQL, S3): `docs/Storage.md`
+- Developers guide (contrib, release, CI): `docs/Developers.md`
 
 ---
 

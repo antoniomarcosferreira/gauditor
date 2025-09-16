@@ -9,13 +9,38 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/antoniomarcosferreira/gauditor/pkg/gauditor"
 )
 
 var exitFunc = os.Exit
+
+func readVersionFromFile() string {
+	candidates := []string{"VERSION"}
+	if exe, err := os.Executable(); err == nil {
+		candidates = append(candidates, filepath.Join(filepath.Dir(exe), "VERSION"))
+	}
+	for _, p := range candidates {
+		if b, err := os.ReadFile(p); err == nil {
+			v := strings.TrimSpace(string(b))
+			if v != "" {
+				return v
+			}
+		}
+	}
+	return ""
+}
+
+func currentVersion() string {
+	if v := readVersionFromFile(); v != "" {
+		return v
+	}
+	return "-unknown-"
+}
 
 // newServer returns an http.Handler with routes configured for the recorder.
 //
@@ -132,10 +157,16 @@ func run(addr string, handler http.Handler) error {
 func realMain() int {
 	fs := flag.NewFlagSet("gauditor", flag.ContinueOnError)
 	addr := fs.String("addr", ":8091", "HTTP listen address")
+	showVersion := fs.Bool("version", false, "print version and exit")
 	_ = fs.Parse(os.Args[1:])
 
 	if env := os.Getenv("GAUDITOR_ADDR"); env != "" {
 		*addr = env
+	}
+
+	if *showVersion {
+		log.Println("gauditor", currentVersion())
+		return 0
 	}
 
 	recorder := gauditor.NewRecorder(gauditor.NewMemoryStorage())

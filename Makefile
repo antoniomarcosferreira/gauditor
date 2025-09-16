@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-.PHONY: tidy build test lint format clean coverage coverage-watch help
+.PHONY: tidy build test lint format clean coverage coverage-watch help release-tag release-print build-versioned
 
 # Usage:
 #   make test        # run unit tests
@@ -12,12 +12,17 @@ help: ## Show common commands
 	@echo "make test              # run unit tests"
 	@echo "make coverage          # generate HTML coverage report at docs/coverage.html"
 	@echo "make coverage-watch    # watch and regenerate coverage (requires fswatch)"
+	@echo "make release-tag       # tag repo with VERSION and push tags"
+	@echo "make release-print     # print current VERSION"
 
 tidy:
 	go mod tidy
 
 build:
 	go build ./...
+
+build-versioned:
+	go build -ldflags "-X main.version=$(shell cat VERSION)" ./...
 
 test:
 	go test ./...
@@ -36,4 +41,11 @@ format:
 
 clean:
 	rm -rf bin dist build
+
+release-print:
+	@cat VERSION
+
+release-tag:
+	git tag $(shell cat VERSION)
+	git push origin $(shell cat VERSION)
 

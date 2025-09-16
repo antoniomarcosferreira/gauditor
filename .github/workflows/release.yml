@@ -32,12 +32,5 @@ jobs:
       - name: Checksums
         run: |
           (cd dist && shasum -a 256 * > SHA256SUMS)
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ github.ref_name }}
-          name: ${{ github.ref_name }}
-          generate_release_notes: true
-          files: |
-            dist/*
+      # Release publication moved to local script: scripts/create_release_local.sh
 

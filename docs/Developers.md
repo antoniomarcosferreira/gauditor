@@ -95,9 +95,8 @@ Veja `examples/gincrud`. O middleware registra automaticamente requisições bem
 
 Automação:
 
-- Workflow de release: `.github/workflows/release.yml` (dispara ao criar tag `v*`)
-- Artefatos: binários Linux/macOS/Windows + `SHA256SUMS`
-- Alvo do Makefile:
+- Workflow de release: `.github/workflows/release.yml` compila e gera artefatos (binários Linux/macOS/Windows + `SHA256SUMS`). A publicação da release é feita localmente via script (ver abaixo)
+- Alvos do Makefile:
 
 ```bash
 make release-print     # mostra a versão atual
@@ -109,13 +108,35 @@ Como cortar um release:
 
 1) Atualize `VERSION` e `CHANGELOG.md`
 2) Commit e push
-3) Rode `make release-tag`
+3) Rode `make release-tag` para criar/enviar a tag
+4) Publique a release com notas do CHANGELOG (via gh CLI):
+
+```bash
+bash scripts/create_release_local.sh            # usa a versão de VERSION
+# ou explicitando a tag
+bash scripts/create_release_local.sh v0.0.1
+```
+
+Recriar release e tag (se necessário):
+
+```bash
+# Apagar release (gh) e tag (local/remoto)
+gh release delete v0.0.1 -y || true
+git tag -d v0.0.1 || true
+git push origin :refs/tags/v0.0.1 || true
+
+# Recriar a tag a partir de VERSION
+make release-tag
+
+# Recriar a release com notas do CHANGELOG
+bash scripts/create_release_local.sh
+```
 
 ## CI/CD
 
 - `ci.yml`: testes com cobertura, `golangci-lint`, `govulncheck`
 - `pages.yml`: publica `docs/` (coverage dashboard) no GitHub Pages
-- `release.yml`: builds e publicação de release sob tags `v*`
+- `release.yml`: build/artefatos sob tags `v*` (publicação via `scripts/create_release_local.sh`)
 
 ## Contribuindo
 
